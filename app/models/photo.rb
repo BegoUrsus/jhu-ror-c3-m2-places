@@ -47,7 +47,10 @@ class Photo
   	end
   end
 
-  #Checks if instance from GridFS exists
+  # Instance method to return true if the 
+  # instance has been created within GridFS. This method must:
+  #     * take no arguments
+  #     * return true if the `photo` instance has been stored to GridFS (**Hint**: `@id.nil?`)
   def persisted?
   	!@id.nil?
   end
