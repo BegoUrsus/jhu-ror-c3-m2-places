@@ -273,6 +273,16 @@ end
     return result
   end
 
+  ####################################################################
+  # Relationships
+  ####################################################################
+
+  # `persisted?` method returns true if the model instance has been 
+  #   saved to the database.  This will allow it to use the `:id` to navigate from 
+  #   the index page to the show page.
+  def persisted?
+    !@id.nil?
+  end
 
 
 

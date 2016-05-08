@@ -18,7 +18,7 @@
         <% if photo %>
           <td><img height="50px" width="65px" src= <%= photos_show_path("#{photo.id}")%>/></td>
         <% end %>
-        <td><%= link_to 'Show', place %></td>
+        <td><%= link_to 'Show', place_path(place.id) %></td>
       </tr>
     <% end %>
   </tbody>
