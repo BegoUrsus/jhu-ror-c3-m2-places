@@ -46,7 +46,7 @@ class Place
   # Standard Queries
   ########################################################################
 
-  # Class method called `find_by_short_name` that will return a `Mongo::Collection::View`
+  # Class method `find_by_short_name` that will return a `Mongo::Collection::View`
   # with a query to match documents with a matching `short_name` within `address_components`. 
   # This method must:
   #     * accept a String input parameter
@@ -57,7 +57,7 @@ class Place
     collection.find(:'address_components.short_name' => short_name)
   end
 
-  # Helper class method called `to_places` that will accept a `Mongo::Collection::View` 
+  # Helper class method `to_places` that will accept a `Mongo::Collection::View` 
   # and return a collection of `Place` instances. This method must:
   #     * accept an input parameter
   #     * iterate over contents of that input parameter
@@ -65,6 +65,18 @@ class Place
   #     * return a collection of results containing `Place` objects
   def self.to_places(places) 
     places.map { |p| Place.new(p) }
+  end
+
+  # Class method `find` that will return an instance of `Place` for a supplied `id`.
+  # This method must:
+  #     * accept a single String `id` as an argument
+  #     * convert the `id` to `BSON::ObjectId` form (**Hint**: `BSON::ObjectId.from_string(s)`)
+  #     * find the document that matches the `id`
+  #     * return an instance of `Place` initialized with the document if found (Hint: `Place.new`)
+  def self.find(id)
+    id = BSON::ObjectId.from_string(id)
+    doc = collection.find(:_id => id).first
+    return doc.nil? ? nil : Place.new(doc)
   end
 
 end  
