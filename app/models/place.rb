@@ -42,5 +42,19 @@ class Place
   	collection.insert_many(docs)
   end
 
+  ########################################################################
+  # Standard Queries
+  ########################################################################
+
+  # Class method called `find_by_short_name` that will return a `Mongo::Collection::View`
+  # with a query to match documents with a matching `short_name` within `address_components`. 
+  # This method must:
+  #     * accept a String input parameter
+  #     * find all documents in the `places` collection with a matching 
+  #       `address_components.short_name`
+  #     * return the `Mongo::Collection::View` result
+  def self.find_by_short_name(short_name) 
+    collection.find(:'address_components.short_name' => short_name)
+  end
 
 end  
