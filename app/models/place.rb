@@ -16,8 +16,8 @@ class Place
     @formatted_address = params[:formatted_address]
     @location = Point.new(params[:geometry][:geolocation])
     @address_components = params[:address_components]
-      .map{ |a| AddressComponent.new(a) if !params[:address_components].nil?}
-  end
+      .map{ |a| AddressComponent.new(a)} if !params[:address_components].nil? 
+end
 
   # class method called `mongo_client` that returns a MongoDB Client from Mongoid
   # referencing the default database from the `config/mongoid.yml` file 
@@ -228,7 +228,7 @@ class Place
   #   * limits the maximum distance -- if provided -- in determining matches 
   #     (**Hint**: `$maxDistance`)
   #   * returns the resulting view (i.e., the result of find())
-  def self.near(point, max_meters= nil)
+  def self.near(point, max_meters=nil)
     query = {
       :'geometry.geolocation' => {
         :$near => {
@@ -240,7 +240,17 @@ class Place
     collection.find(query)
   end
 
-
+  #  Instance method `near` that wraps the class method 'near'
+  # This method must:
+  #   * accept an optional parameter that sets a maximum distance threshold in meters
+  #   * locate all `places` within the specified maximum distance threshold
+  #   * return the collection of matching documents as a collection of `Place` instances
+  #     using the `to_places` class method added earlier.
+  def near(max_meters=nil)
+    if (!@location.nil?)
+      self.class.to_places(self.class.near(@location, max_meters))
+    end
+  end
 
 
 end  
