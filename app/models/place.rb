@@ -218,6 +218,29 @@ class Place
     collection.indexes.drop_one('geometry.geolocation_2dsphere')
   end
 
+  # Class method called `near` that returns places that are closest to 
+  # provided `Point`. This method must:
+  #   * accept an input parameter of type `Point` and 
+  #     an optional `max_meters` that defaults to no maximum
+  #   * performs a `$near` search using the `2dsphere` index placed on the `geometry.geolocation`
+  #     property and the `GeoJSON` output of `point.to_hash` (created earlier). 
+  #     (**Hint**: [`Query a 2dsphere Index`](https://docs.mongodb.org/manual/tutorial/query-a-2dsphere-index/))
+  #   * limits the maximum distance -- if provided -- in determining matches 
+  #     (**Hint**: `$maxDistance`)
+  #   * returns the resulting view (i.e., the result of find())
+  def self.near(point, max_meters= nil)
+    query = {
+      :'geometry.geolocation' => {
+        :$near => {
+          :$geometry => point.to_hash,
+          :$maxDistance => max_meters
+        }
+      }
+    }
+    collection.find(query)
+  end
+
+
 
 
 end  
