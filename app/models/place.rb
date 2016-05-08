@@ -171,6 +171,27 @@ class Place
     docs.to_a.map {|h| h[:_id]}
   end
 
+  # Class method `find_ids_by_country_code` that will return the `id` of each
+  # document in the `places` collection that has 
+  # an `address_component.short_name` of type `country`
+  # and matches the provided parameter. This method must:
+  #     * accept a single `country_code` parameter
+  #     * locate each `address_component` with a matching `short_name` 
+  #       being tagged with the `country` type (Hint: `$match`)
+  #     * return only the `_id` property from the database (Hint: `$project`)
+  #     * return only a collection of `_id`s converted to Strings 
+  #       (Hint: `.map {|doc| doc[:_id].to_s}`)
+  def self.find_ids_by_country_code(country_code)
+    pline = [
+      { :$match => {
+        :'address_components.types' => "country",
+        :'address_components.short_name' => country_code
+        }
+      },
+      { :$project => { :_id => 1 } }
+    ]
 
+    collection.find.aggregate(pline).to_a.map { |doc| doc[:_id].to_s }
+  end
 
 end  
