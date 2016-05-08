@@ -57,4 +57,14 @@ class Place
     collection.find(:'address_components.short_name' => short_name)
   end
 
+  # Helper class method called `to_places` that will accept a `Mongo::Collection::View` 
+  # and return a collection of `Place` instances. This method must:
+  #     * accept an input parameter
+  #     * iterate over contents of that input parameter
+  #     * change each document hash to a Place instance (**Hint**: `Place.new`)
+  #     * return a collection of results containing `Place` objects
+  def self.to_places(places) 
+    places.map { |p| Place.new(p) }
+  end
+
 end  
