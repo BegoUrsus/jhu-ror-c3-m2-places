@@ -1,4 +1,6 @@
 class Place
+  include ActiveModel::Model
+
   # properties
   #  * a read/write (String) attribute called `id`
   #  * a read/write (String) attribute called `formatted_address`
