@@ -1,4 +1,5 @@
 class Place
+  require 'pp'
   # properties
   #  * a read/write (String) attribute called `id`
   #  * a read/write (String) attribute called `formatted_address`
@@ -141,5 +142,35 @@ class Place
     pline.push({:$limit=>limit}) if limit != 0
     collection.find.aggregate(pline)  
   end
+
+  # Class method `get_country_names` that returns a distinct collection of 
+  # country names (`long_names`). Your method must:
+  #     * accept no arguments
+  #     * create separate documents for `address_components.long_name` 
+  #       and `address_components.types` (Hint: `$project` and `$unwind`)
+  #     * select only those documents that have a `address_components.types` element 
+  #       equal to `"country"` (Hint: `$match`)
+  #     * form a distinct list based on `address_components.long_name` (Hint: `$group`)
+  #     * return a simple collection of just the country names (`long_name`). 
+  #       You will have to use application code to do this last step. 
+  #       (Hint: `.to_a.map {|h| h[:_id]}`)
+  def self.get_country_names
+    pline = [
+      { :$unwind => '$address_components' },
+      {
+        :$project => {
+          :'address_components.long_name' => 1,
+          :'address_components.types' => 1
+        }
+      },
+      { :$match => { :"address_components.types" => "country" } },
+      { :$group => { :"_id" => '$address_components.long_name' } }
+    ]
+    docs = collection.find.aggregate(pline)
+    
+    docs.to_a.map {|h| h[:_id]}
+  end
+
+
 
 end  
