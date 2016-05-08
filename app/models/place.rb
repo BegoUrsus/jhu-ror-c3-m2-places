@@ -79,4 +79,18 @@ class Place
     return doc.nil? ? nil : Place.new(doc)
   end
 
+  # Class method called `all` that will return an instance 
+  # of all documents as `Place` instances.
+  # This method must:
+  #     * accept two optional arguments: `offset` and `limit` in that order. 
+  #       `offset` must default to no offset and `limit` must default to no limit
+  #     * locate all documents within the `places` collection within paging limits
+  #     * return each document as in instance of a `Place` within a collection  
+  def self.all(offset = 0, limit = nil)
+    docs = collection.find({})
+      .skip(offset)
+    docs = docs.limit(limit) if !limit.nil?
+    docs = to_places(docs)
+  end
+
 end  
