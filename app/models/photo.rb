@@ -127,7 +127,11 @@ class Photo
   	end
   end
 
-  #Returns data contents of file
+  #getter for `contents` that will return the data contents of the file.
+  # This method must:
+  #     * accept no arguments
+  #     * read the data contents from GridFS for the associated file
+  #     * return the data bytes
   def contents
   	doc = self.class.mongo_client.database.fs.find_one(:_id => BSON::ObjectId(@id))
   	if doc
