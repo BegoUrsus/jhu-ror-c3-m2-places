@@ -55,6 +55,7 @@ class Photo
   	!@id.nil?
   end
 
+  # STEP 1:
   # Instance method `save` to store a new instance into GridFS. 
   # This method must:
   #   * check whether the instance is already persisted and do nothing (for now) 
@@ -67,7 +68,16 @@ class Photo
   #   * store the data contents in `GridFS`
   #   * store the generated `_id` for the file in the `:id` property of the `Photo` model
   #     instance.
-
+  # STEP 2:
+  # Update the logic within the existing `save` instance method
+  # to update the file properties (not the file data -- just the file
+  # properties/metadata) when called on a persisted instance. Previously, the
+  # method only handled a new `Photo` instance that was yet persisted. This
+  # method must:
+  # * accept no inputs
+  # * if the instance is not yet persisted, perform the existing logic to add the file to GridFS
+  # * if the instance is already persisted (Hint: `persisted?` helper method added earlier) 
+  #   update the file info (Hint: `find(...).update_one(...)`)
   def save
     if !persisted?
       gps = EXIFR::JPEG.new(@contents).gps
