@@ -251,5 +251,30 @@ end
     end
   end
 
+  ####################################################################
+  # Relationships
+  ####################################################################
+
+  # Instance method that return a collection of `Photos` that have been associated 
+  # with the place. This method must:
+  #   * accept an optional set of arguments (`offset`, and `limit`) to skip into 
+  #     and limit the result set. The offset should default to `0` and the limit should
+  #     default to unbounded.
+  def photos(offset = 0, limit = nil)
+    photos = Photo.find_photos_for_place(@id).skip(offset)
+    photos = photos.limit(limit) if !limit.nil?
+    if photos.count
+      result = photos.map { |photo| Photo.new(photo) }
+    else 
+      result = []
+    end
+    return result
+  end
+
+
+
+
+
+
 
 end  

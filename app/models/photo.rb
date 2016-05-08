@@ -161,6 +161,11 @@ class Photo
   	self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id)).delete_one
   end
 
+
+  ####################################################################
+  # Relationships
+  ####################################################################
+
   # Helper instance method that will return the `_id` of the document
   # within the `places` collection. This `place` document must be within a 
   # specified distance threshold of where the photo was taken. 
