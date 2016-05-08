@@ -31,7 +31,14 @@ class Photo
   	db = Mongo::Client.new('mongodb://localhost:27017')
   end
 
-  #Initialize instance methods of photo
+  # `initialize` method used to initialize the instance attributes of `Photo` 
+  # from the hash returned from queries like `mongo_client.database.fs.find`. 
+  # This method must
+  #   * initialize `@id` to the string form of `_id` and `@location` to the `Point` form of
+  #     `metadata.location` if these exist. The document hash is likely coming from query 
+  #     results coming from `mongo_client.database.fs.find`.
+  #   * create a default instance if no hash is present
+  #   
   def initialize(hash={})
   	@id = hash[:_id].to_s if !hash[:_id].nil?
   	if !hash[:metadata].nil?
