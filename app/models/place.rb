@@ -194,4 +194,30 @@ class Place
     collection.find.aggregate(pline).to_a.map { |doc| doc[:_id].to_s }
   end
 
+  ########################################################################
+  # Geolocation Queries
+  ########################################################################  
+
+  # Class methods `create_indexes` used to create `2dsphere` index to your 
+  # collection for the `geometry.geolocation` property. 
+  # This method must make sure the `2dsphere` index is in place for the 
+  # `geometry.geolocation` property (**Hint**: `Mongo::Index::GEO2DSPHERE`)
+  #     * `remove_indexes` must make sure the `2dsphere` index is removed from the 
+  #     collection (**Hint**: `Place.collection.indexes.map {|r| r[:name] }`
+  #     displays the names of each index)
+  def self.create_indexes
+    collection.indexes.create_one(:'geometry.geolocation' => Mongo::Index::GEO2DSPHERE)
+  end
+
+  # Class methods `remove_indexes` used to remove a `2dsphere` index to your 
+  # collection for the `geometry.geolocation` property. 
+  # These methods must make sure the `2dsphere` index is removed from the 
+  # collection (**Hint**: `Place.collection.indexes.map {|r| r[:name] }`
+  # displays the names of each index)
+  def self.remove_indexes
+    collection.indexes.drop_one('geometry.geolocation_2dsphere')
+  end
+
+
+
 end  
