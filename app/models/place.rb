@@ -104,4 +104,42 @@ class Place
     self.class.collection.delete_one(:_id => id)
   end
 
+  ########################################################################
+  # Aggregation Framework Queries
+  ########################################################################  
+
+  # Class method `get_address_components` that returns a collection of 
+  # hash documents with `address_components` and their associated 
+  # `_id`, `formatted_address` and `location` properties. 
+  # Your method must:
+  #     * accept optional `sort`, `offset`, and `limit` parameters
+  #     * extract all `address_component` elements within each document  
+  #       contained withinthe collection (**Hint**: `$unwind`)
+  #     * return only the `_id`, `address_components`, `formatted_address`, 
+  #       and `geometry.geolocation` elements (Hint: `$project`)
+  #     * apply a provided `sort` or no sort if not provided 
+  #       (Hint: `$sort` and `q.pipeline` method)
+  #     * apply a provided `offset` or no offset if not provided 
+  #       (Hint: `$skip` and `q.pipeline` method)
+  #     * apply a provided `limit` or no limit if not provided 
+  #       (Hint: `$limit` and `q.pipeline` method)
+  #     * return the result of the above query 
+  #       (Hint: `collection.find.aggregate(...)`)
+  def self.get_address_components(sort = nil, offset = 0, limit = 0)
+    pline = [
+      { :$unwind => "$address_components" },
+      {
+        :$project => {
+          :_id => 1, 
+          :address_components => 1, 
+          :formatted_address => 1, 
+          :'geometry.geolocation' => 1 }
+      }
+    ]
+    pline.push({:$sort=>sort}) if !sort.nil?
+    pline.push({:$skip=>offset}) if offset != 0
+    pline.push({:$limit=>limit}) if limit != 0
+    collection.find.aggregate(pline)  
+  end
+
 end  
