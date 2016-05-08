@@ -21,7 +21,7 @@ class Photo
   #   * a write-only (for now) attribute called `contents` that will be used to import and access
   #   the raw data of the photo. This will have varying data types depending on 
   #   context.
-  attr_accessor :id, :location
+  attr_accessor :id, :location, :place
   attr_writer :contents
 
   # Class method `mongo_client` that returns a MongoDB Client from Mongoid
@@ -181,6 +181,24 @@ class Photo
   	end
   end
 
+  # Add `Photo` the functionality to support a relationship with `Place`. 
+  # Add a new `place` attribute in the `Photo` class to be used to realize a `Many-to-One` 
+  # relationship between `Photo` and `Place`. 
+  # The `Photo` class must:
+  #     * add support for a `place` instance attribute in the model class. 
+  #       You will be implementing a custom setter/getter for this attribute
+  #     * store this new property within the file metadata (`metadata.place`)
+  #     * update the `initialize` method to cache the contents of `metadata.place` 
+  #       in an instance attribute called `@place`
+  #     * update the `save` method to include the `@place` and `@location` properties 
+  #       under the parent `metadata` property in the file info.
+  #     * add a custom getter for `place` that will find and return a `Place` 
+  #       instance that represents the stored ID (**Hint**: `Place.find`)
+  #     * add a custom setter that will update the `place` ID by accepting a 
+  #      `BSON::ObjectId`, String, or `Place` instance. 
+  #     In all three cases you will want to derive a a `BSON::ObjectId` from what 
+  #     is passed in.
+
   #Place getter
   def place
     if !@place.nil?
@@ -189,20 +207,32 @@ class Photo
   end
 
   #Place setter
-  def place=(place)
-    if place.class == Place
-    	@place = BSON::ObjectId.from_string(place.id)
-    elsif place.class == String
-    	@place = BSON::ObjectId.from_string(place)
+  def place=(new_place)
+    if new_place.is_a?(Place)
+    	@place = BSON::ObjectId.from_string(new_place.id)
+    elsif new_place.is_a?(String)
+    	@place = BSON::ObjectId.from_string(new_place)
     else
-    	@place = place
+    	@place = new_place
     end
   end
 
-  #Finds photo for place id
+  # Class method called `find_photos_for_place` that accepts the `BSON::ObjectId`
+  # of a `Place` and returns a collection view of photo documents that have the foreign key
+  # reference. This method must:
+  #   * accept the ID of a `place` in either `BSON::ObjectId` or `String` ID form 
+  #     (Hint: `BSON::ObjectId.from_string(place_id.to_s`) 
+  #   * find GridFS file documents with the `BSON::ObjectId` form of that ID in 
+  #     the `metadata.place` property.
+  #   * return the result view
+
   def self.find_photos_for_place(place_id)
-  	place_id = BSON::ObjectId.from_string(place_id.to_s)
-  	mongo_client.database.fs.find(:'metadata.place' => place_id)
+    if place_id.is_a?(BSON::ObjectId)
+      new_id = place_id
+    elsif place_id.is_a?(String)
+      new_id = BSON::ObjectId.from_string(place_id.to_s)
+    end
+  	mongo_client.database.fs.find(:'metadata.place' => new_id)
   end
 
 end
