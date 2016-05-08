@@ -143,7 +143,10 @@ class Photo
   	end
   end
 
-  #Delete object from Grid
+  # Instance method  `destroy` to the `Photo` class that will delete the file and
+  # contents associated with the ID of the object instance. This method must:
+  #   * accept no arguments
+  #   * delete the file and its contents from GridFS
   def destroy
   	self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id)).delete_one
   end
