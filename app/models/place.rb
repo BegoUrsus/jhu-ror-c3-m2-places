@@ -93,4 +93,15 @@ class Place
     docs = to_places(docs)
   end
 
+  # Instance method `destroy` in the `Place` model class
+  # that will delete the document associtiated with its assigned `id`. This 
+  # method must:
+  #     * accept no arguments
+  #     * delete the document from the `places` collection that has an `_id` associated with
+  #     the `id` of the instance  
+  def destroy
+    id = BSON::ObjectId.from_string(@id);
+    self.class.collection.delete_one(:_id => id)
+  end
+
 end  
