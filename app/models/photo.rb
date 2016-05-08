@@ -55,13 +55,27 @@ class Photo
   	!@id.nil?
   end
 
-  #Saves or updates photos
+  # Instance method `save` to store a new instance into GridFS. 
+  # This method must:
+  #   * check whether the instance is already persisted and do nothing (for now) 
+  #     if already persisted (**Hint**: use your new `persisted?` method to 
+  #     determine if your instance has been persisted) 
+  #   * use the `exifr` gem to extract geolocation information from the `jpeg` image. 
+  #   * store the content type of `image/jpeg` in the `GridFS` `contentType` file property.
+  #   * store the `GeoJSON Point` format of the image location in the `GridFS` `metadata` 
+  #     file property and the object in class' `location` property.
+  #   * store the data contents in `GridFS`
+  #   * store the generated `_id` for the file in the `:id` property of the `Photo` model
+  #     instance.
+
   def save
     if !persisted?
       gps = EXIFR::JPEG.new(@contents).gps
+
       description = {}
       description[:content_type] = 'image/jpeg'
       description[:metadata] = {}
+      
       @location = Point.new(:lng => gps.longitude, :lat => gps.latitude)
       description[:metadata][:location] = @location.to_hash
       description[:metadata][:place] = @place
@@ -83,11 +97,14 @@ class Photo
     end
   end
 
-  #Returns photos
+  #class method to the `Photo` class called `all`. This method must:
+  # * accept an optional set of arguments for skipping into and limiting the results of a search
+  # * default the offset (**Hint**: `skip`) to 0 and the limit to unlimited
+  # * return a collection of `Photo` instances representing each file returned from the database
+  # (**Hint**: `...find.map {|doc| Photo.new(doc) }`)
   def self.all(skip = 0, limit = nil)
   	docs = mongo_client.database.fs.find({}).skip(skip)
   	docs = docs.limit(limit) if !limit.nil?
-
   	docs.map do |doc|
   		Photo.new(doc)
   	end
