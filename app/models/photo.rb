@@ -151,10 +151,19 @@ class Photo
   	self.class.mongo_client.database.fs.find(:_id => BSON::ObjectId(@id)).delete_one
   end
 
-  #Helper method to find nearest photo place
+  # Helper instance method that will return the `_id` of the document
+  # within the `places` collection. This `place` document must be within a 
+  # specified distance threshold of where the photo was taken. 
+  # This `Photo` method must:
+  #   * accept a maximum distance in meters 
+  #   * uses the `near` class method in the `Place` model and its location to locate
+  #     places within a maximum distance of where the photo was taken.
+  #   * limit the result to only the nearest matching place (**Hint**: `limit()`)
+  #   * limit the result to only the `_id` of the matching place document 
+  #     **Hint**: `projection()`)
+  #   * returns zero or one `BSON::ObjectId`s for the nearby place found
   def find_nearest_place_id(max_dist)
   	place = Place.near(@location, max_dist).limit(1).projection(:_id => 1).first
-
   	if place.nil?
   		return nil
   	else
